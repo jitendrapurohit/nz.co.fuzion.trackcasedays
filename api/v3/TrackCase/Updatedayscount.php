@@ -1,7 +1,6 @@
 <?php
-
 /**
- * TrackCase.updatecasedays API
+ * TrackCase.Updatedayscount API
  *
  * @param array $params
  * @return array API result descriptor
@@ -9,7 +8,7 @@
  * @see civicrm_api3_create_error
  * @throws API_Exception
  */
-function civicrm_api3_track_case_updatecasedays($params) {
+function civicrm_api3_track_case_Updatedayscount($params) {
   $cases = civicrm_api3('Case', 'get', array(
     'sequential' => 1,
     'return' => array("id", "start_date"),

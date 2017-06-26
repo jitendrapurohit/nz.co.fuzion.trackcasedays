@@ -15,7 +15,7 @@ return array (
       'description' => 'Update Days count for ongoing Cases',
       'run_frequency' => 'Daily',
       'api_entity' => 'TrackCase',
-      'api_action' => 'updatecasedays',
+      'api_action' => 'Updatedayscount',
       'parameters' => '',
     ),
   ),
