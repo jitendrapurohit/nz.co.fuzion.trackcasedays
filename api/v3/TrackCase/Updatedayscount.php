@@ -11,10 +11,11 @@
 function civicrm_api3_track_case_Updatedayscount($params) {
   $cases = civicrm_api3('Case', 'get', array(
     'sequential' => 1,
-    'return' => array("id", "start_date"),
-    'status_id' => "Open",
-    'end_date' => array('IS NULL' => 1),
+    'return' => array("id", "start_date", "end_date"),
+    'status_id' => array('IN' => array("Open", "Closed")),
+    'options' => array('limit' => 0),
   ));
+
   //Get table name of the custom group
   $daysOpenTableName = civicrm_api3('CustomGroup', 'getsingle', array(
     'return' => array("table_name"),
@@ -34,7 +35,11 @@ function civicrm_api3_track_case_Updatedayscount($params) {
     $dao = CRM_Core_DAO::executeQuery($query);
 
     //Count number of days a case is opened.
-    $datediff = time() - strtotime($caseVal['start_date']);
+    $from = time();
+    if (!empty($caseVal['end_date'])) {
+      $from = strtotime($caseVal['end_date']);
+    }
+    $datediff = $from - strtotime($caseVal['start_date']);
     $daysOpen = floor($datediff / (60 * 60 * 24)) + 1;
 
     //Insert/Update into custom table.
