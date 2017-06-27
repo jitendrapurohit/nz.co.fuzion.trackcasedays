@@ -64,6 +64,7 @@ function trackcasedays_civicrm_uninstall() {
   ));
   $caseFid = civicrm_api3('CustomField', 'getsingle', array(
     'return' => array("id"),
+    'custom_group_id' => "Track_Case_Days",
     'name' => "Days_Open",
   ));
   civicrm_api3('CustomField', 'delete', array(

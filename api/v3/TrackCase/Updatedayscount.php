@@ -35,7 +35,7 @@ function civicrm_api3_track_case_Updatedayscount($params) {
 
     //Count number of days a case is opened.
     $datediff = time() - strtotime($caseVal['start_date']);
-    $daysOpen = floor($datediff / (60 * 60 * 24));
+    $daysOpen = floor($datediff / (60 * 60 * 24)) + 1;
 
     //Insert/Update into custom table.
     if ($dao->fetch()) {
