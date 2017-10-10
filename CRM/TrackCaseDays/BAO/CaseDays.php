@@ -1,6 +1,6 @@
 <?php
 
-class CRM_UpdateCaseDays_BAO_CaseDays {
+class CRM_TrackCaseDays_BAO_CaseDays {
 
   /**
    * Calculate and update active days for the case.

@@ -17,7 +17,7 @@ function civicrm_api3_track_case_Updatedayscount($params) {
   $caseStatus = CRM_Utils_Array::collect('name', $result['values']);
   //Update pending custom field if we have a pending status for case.
   if (in_array('Pending', $caseStatus)) {
-    CRM_UpdateCaseDays_BAO_CaseDays::calculatePendingDays();
+    CRM_TrackCaseDays_BAO_CaseDays::calculatePendingDays();
   }
-  CRM_UpdateCaseDays_BAO_CaseDays::calculateOpenDays();
+  CRM_TrackCaseDays_BAO_CaseDays::calculateOpenDays();
 }
