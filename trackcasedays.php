@@ -35,10 +35,21 @@ function trackcasedays_civicrm_install() {
   civicrm_api3('CustomField', 'create', array(
     'sequential' => 1,
     'custom_group_id' => "Track_Case_Days",
+    'label' => "Inactive Days",
+    'data_type' => "Int",
+    'html_type' => "Text",
+    'is_view' => 1,
+    'weight' => 1,
+  ));
+  //Custom field to keep track of the days open.
+  civicrm_api3('CustomField', 'create', array(
+    'sequential' => 1,
+    'custom_group_id' => "Track_Case_Days",
     'label' => "Days Open",
     'data_type' => "Int",
     'html_type' => "Text",
     'is_view' => 1,
+    'weight' => 2,
   ));
   _trackcasedays_civix_civicrm_install();
 }
@@ -67,8 +78,16 @@ function trackcasedays_civicrm_uninstall() {
     'custom_group_id' => "Track_Case_Days",
     'name' => "Days_Open",
   ));
+  $caseFid2 = civicrm_api3('CustomField', 'getsingle', array(
+    'return' => array("id"),
+    'custom_group_id' => "Track_Case_Days",
+    'name' => "Inactive_Days",
+  ));
   civicrm_api3('CustomField', 'delete', array(
     'id' => $caseFid['id'],
+  ));
+  civicrm_api3('CustomField', 'delete', array(
+    'id' => $caseFid2['id'],
   ));
   civicrm_api3('CustomGroup', 'delete', array(
     'id' => $caseGid['id'],
