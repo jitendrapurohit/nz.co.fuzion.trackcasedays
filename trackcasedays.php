@@ -51,6 +51,10 @@ function trackcasedays_civicrm_install() {
     'is_view' => 1,
     'weight' => 2,
   ));
+
+  //Modify length of case subject to 380.
+  CRM_Core_DAO::executeQuery("ALTER TABLE civicrm_case MODIFY subject VARCHAR(380)");
+
   _trackcasedays_civix_civicrm_install();
 }
 
