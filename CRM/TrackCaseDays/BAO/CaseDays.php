@@ -18,17 +18,11 @@ class CRM_TrackCaseDays_BAO_CaseDays {
       if (!empty($caseVal['end_date'])) {
         $from = strtotime($caseVal['end_date']);
       }
-      $statusActivity = civicrm_api3('Activity', 'get', array(
-        'sequential' => 1,
-        'return' => array("activity_date_time"),
-        'case_id' => $caseVal['id'],
-        'activity_type_id' => "Change Case Status",
-      ));
-      $dateOpened = $caseVal['start_date'];
-      if (!empty($statusActivity['values'])) {
-        $dateOpened = $statusActivity['values'][0]['activity_date_time'];
+      $dateOpened = self::getStartDateFromActivity($caseVal['id']);
+      if (empty($dateOpened)) {
+        $dateOpened = strtotime($caseVal['start_date']);
       }
-      $datediff = $from - strtotime($dateOpened);
+      $datediff = $from - $dateOpened;
       $daysOpen = floor($datediff / (60 * 60 * 24)) + 1;
 
       self::updateCustomValue($caseVal, $daysOpenTableName, $columnName, $daysOpen);
@@ -36,20 +30,54 @@ class CRM_TrackCaseDays_BAO_CaseDays {
   }
 
   /**
+   * Get Activity date from change case status activity.
+   *
+   * @param int $caseId
+   *
+   * @return date|NULL
+   */
+  public static function getStartDateFromActivity($caseId) {
+    $statusActivity = civicrm_api3('Activity', 'get', array(
+      'sequential' => 1,
+      'return' => array("activity_date_time"),
+      'case_id' => $caseId,
+      'activity_type_id' => "Change Case Status",
+    ));
+
+    if (!empty($statusActivity['values'])) {
+      return strtotime($statusActivity['values'][0]['activity_date_time']);
+    }
+    return NULL;
+  }
+
+  /**
    * Calculate and update pending days for the case.
    */
   public static function calculatePendingDays() {
-    $values = self::getCasesAndCustomFields(array("Pending"), 'Inactive_Days');
+    $values = self::getCasesAndCustomFields(array('Pending', 'Open', 'Closed'), 'Inactive_Days');
     extract($values);
+    $pendingStatus = civicrm_api3('OptionValue', 'getvalue', array(
+      'return' => "value",
+      'option_group_id' => "case_status",
+      'name' => "Pending",
+    ));
     if (empty($cases['count'])) {
       return;
     }
     foreach ($cases['values'] as $caseVal) {
+      $pendingDays = 0;
+      $dateOpened = self::getStartDateFromActivity($caseVal['id']);
+      if (empty($dateOpened) && $caseVal['status_id'] == $pendingStatus) {
+        $dateOpened = time();
+        $pendingDays = 1;
+      }
       //Count number of days a case is opened.
-      $datediff = time() - strtotime($caseVal['start_date']);
-      $daysOpen = floor($datediff / (60 * 60 * 24)) + 1;
+      if (!empty($dateOpened)) {
+        $datediff = $dateOpened - strtotime($caseVal['start_date']);
+        $pendingDays += floor($datediff / (60 * 60 * 24));
+      }
 
-      self::updateCustomValue($caseVal, $daysOpenTableName, $columnName, $daysOpen);
+      self::updateCustomValue($caseVal, $daysOpenTableName, $columnName, $pendingDays);
     }
   }
 
@@ -91,7 +119,7 @@ class CRM_TrackCaseDays_BAO_CaseDays {
   public static function getCasesAndCustomFields($caseStatuses, $cfName) {
     $cases = civicrm_api3('Case', 'get', array(
       'sequential' => 1,
-      'return' => array("id", "start_date", "end_date"),
+      'return' => array("id", "start_date", "end_date", "status_id"),
       'status_id' => array('IN' => $caseStatuses),
       'options' => array('limit' => 0),
     ));
