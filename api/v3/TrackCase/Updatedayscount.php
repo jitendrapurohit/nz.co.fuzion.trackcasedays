@@ -20,4 +20,5 @@ function civicrm_api3_track_case_Updatedayscount($params) {
     CRM_TrackCaseDays_BAO_CaseDays::calculatePendingDays();
   }
   CRM_TrackCaseDays_BAO_CaseDays::calculateOpenDays();
+  CRM_TrackCaseDays_BAO_CaseDays::calculateReopenedDays();
 }

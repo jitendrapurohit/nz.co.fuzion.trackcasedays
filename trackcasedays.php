@@ -36,7 +36,7 @@ function trackcasedays_civicrm_install() {
     'sequential' => 1,
     'custom_group_id' => "Track_Case_Days",
     'label' => "Inactive Days",
-    'data_type' => "Int",
+    'data_type' => "String",
     'html_type' => "Text",
     'is_view' => 1,
     'weight' => 1,
@@ -46,7 +46,17 @@ function trackcasedays_civicrm_install() {
     'sequential' => 1,
     'custom_group_id' => "Track_Case_Days",
     'label' => "Days Open",
-    'data_type' => "Int",
+    'data_type' => "String",
+    'html_type' => "Text",
+    'is_view' => 1,
+    'weight' => 2,
+  ));
+  //Custom field to keep track of the days open.
+  civicrm_api3('CustomField', 'create', array(
+    'sequential' => 1,
+    'custom_group_id' => "Track_Case_Days",
+    'label' => "Reopened Days",
+    'data_type' => "String",
     'html_type' => "Text",
     'is_view' => 1,
     'weight' => 2,
